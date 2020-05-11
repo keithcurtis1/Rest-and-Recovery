@@ -162,12 +162,7 @@ on('ready', () => {
                     resourceCurrent_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left');
                     resourceMax_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left', 'max');
                 }
-                i++;
-            }
-            while (i < 10);
 
-            var i = 0
-            do {
                 if (attrLookup(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
                     resourceName_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name');
                     resourceName_r[i] = checkRestList(resourceName_r[i]);
@@ -242,11 +237,7 @@ on('ready', () => {
                 sendMessage('<h3>Rest and Recovery</h3><p>A Roll20 API script to handle recovery on the resource attributes on the D&amp;D 5th Edition by Roll20 sheet.To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. &quot;1d6&quot; is used in all examples, but you can do 2d6+3, 3d20, etc. Here are examples of the commands given and the codes that are affected.</p><b>!r-short</b><p><em>Used for Short Rest</em></p><p><strong>+SR</strong> This resource will return to its maximumm value</p><p><strong>+SR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b>!r-long</b><p><em>Used for Long Rest</em></p><p><strong>+LR</strong> This resource will return to its maximumm value</p><p><strong>+LR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b id="-r-charges">!r-Charges</b><p>*used for restoring charges that are user-controlled, such as &quot;at dawn&quot; or &quot;under a full moon&quot;.</p><p><strong>+1d6</strong></p><b>!r-Ammo</b><p>no code is used here. The script looks for common ammo types: Crossbow bolts, Arrows, Bullets, etc. It rolls 1d2 for each piece of ammo expended. If the result is a &quot;2&quot;, the ammo is recovered. The max and current values are adjusted to reflect the new total.</p><b>Special Cases</b><p>Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:</p><b>These are recovered on a Short or Long Rest:</b><ul><li>Invocations</li><li>Channel Divinity</li><li>Wild Shape</li><li>Superiority Dice</li><li><p>Ki Points</p><b>These are recovered on a Long Rest.</b></li><li>Rages</li><li>Lay on Hands</li><li>Sorcery Points</li></ul><p><strong>Bardic Inspiration</strong> needs a +SR or +LR code, since the recovery rate changes at fifth level</p>');
             } else {
                 sendMessage(rReport);
-                log(rReport);
             }
-
-
-
         }
     });
 });

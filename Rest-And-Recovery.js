@@ -1,43 +1,44 @@
-// Reporter
-// Last Updated: 2019-08-16
-// A script to deal and take cards to selected users from specified decks.
+// Rest and Recovery
+// A Roll20 API script to handle recovery on the resource attributes on the D&D 5th Edition by Roll20 sheet.
 on('ready', () => {
     const version = '0.0.1';
-    log('-=> Rest v' + version + ' <=-');
+    const sheetVersion = 'D&D 5th Edition by Roll20';
+    log('Rest and Recovery v' + version + ' is ready!  Designed for use with the ' + sheetVersion + ' character sheet!');
+
 
     on('chat:message', (msg) => {
-        if ('api' === msg.type && /!r-(short|long|charges|ammo)\b/i.test(msg.content) && msg.selected) {
+        if ('api' === msg.type && /!r-(short|long|charges|ammo|help)\b/i.test(msg.content) && msg.selected) {
             let idList = [];
-            let nameList = []
-            log('Sandbox is up');
-            
-            function checkRestList(rName){
-            let shortRestList = ['Invocations','Channel Divinity','Wild Shape','Superiority Dice','Ki Points'];
-            let longRestList = ['Rages','Lay on Hands','Sorcery Points'];
-            let ammoList = ['Crossbow bolts','Arrows','Bullets','Darts'];
-                  rRecoverName = rName;
-           
-            if (ammoList.includes(rName)){
-                 rRecoverName = rName+'+ammo';
-           }
-//            else if (shortRestList.includes(rName)&&msg.content.includes('short')){
-            else if (longRestList.includes(rName)){
-                rRecoverName = rName+'+LR';
-            }
-//            else if (longRestList.includes(rName)&&msg.content.includes('long')){
-            else if (shortRestList.includes(rName)){
-                rRecoverName = rName+'+SR';
-            } else{
-                rRecoverName = rName+'+x';
-            }
-             log('THE MESSAGE CONTENT IS'+msg.content);
- log('THE RESOURCE NAME IS IS'+rName);
- log('THE MESSAGERECOVERY CODE IS'+rRecoverName);
+            let nameList = [];
+            var rReport = '';
+            const header = "<div style='width: 100%; color: #000; border: 1px solid #000; background-color: #fff; box-shadow: 0 0 3px #000; width: 90%; display: block; text-align: left; font-size: 13px; padding: 5px; margin-bottom: 0.25em; font-family: sans-serif; white-space: pre-wrap;'>";
+            const footer = '</div>';
 
-            return rRecoverName;
+            function sendMessage(messageText) {
+                sendChat("Rest and Recovery", "/w " + msg.who + header + messageText + footer);
+
             }
-            
-            
+
+            function checkRestList(rName) {
+                let shortRestList = ['Invocations', 'Channel Divinity', 'Wild Shape', 'Superiority Dice', 'Ki Points'];
+                let longRestList = ['Rages', 'Lay on Hands', 'Sorcery Points'];
+                let ammoList = ['Crossbow bolts', 'Arrows', 'Bullets', 'Darts'];
+                rRecoverName = rName;
+
+                if (ammoList.includes(rName)) {
+                    rRecoverName = rName + '+ammo';
+                } else if (longRestList.includes(rName)) {
+                    rRecoverName = rName + '+LR';
+                } else if (shortRestList.includes(rName)) {
+                    rRecoverName = rName + '+SR';
+                } else {
+                    rRecoverName = rName + '+x';
+                }
+
+                return rRecoverName;
+            }
+
+
             const attrLookup = (characterid, name, caseSensitive) => {
                 let match = name.match(/^(repeating_.*)_\$(\d+)_.*$/);
                 if (match) {
@@ -109,8 +110,6 @@ on('ready', () => {
             };
 
 
-            //var newvalue = parse('1d6');
-            //log (newvalue);
 
             //Get character list. Future versions may handle multiple characters
             let TCData = msg.selected
@@ -140,21 +139,14 @@ on('ready', () => {
 
 
             resourceName_c = getAttrByName(characterID, "class_resource_name");
- log('CLASS ------------------------------');
-                   log('Resource Name c pre-change = '+resourceName_c);
-            resourceName_c=checkRestList(resourceName_c)
-                    log('Resource Name c post-change = '+resourceName_c);
+            resourceName_c = checkRestList(resourceName_c);
             resourceRecovery_c = resourceName_c.split(/\+(.+)/)[1]; //Regex splits on first occurence of '+', so the dice strings are preserved
             resourceCurrent_c = getAttrByName(characterID, "class_resource");
             resourceMax_c = getAttrByName(characterID, "class_resource", "max");
-            ///log(resourceMax_c);
 
 
             resourceName_o = getAttrByName(characterID, "other_resource_name");
-log('OTHER ------------------------------');
-                    log('Resource Name o pre-change = '+resourceName_o);
-            resourceName_o=checkRestList(resourceName_o)
-                    log('Resource Name o post-change = '+resourceName_o);
+            resourceName_o = checkRestList(resourceName_o);
             resourceRecovery_o = resourceName_o.split(/\+(.+)/)[1];
             resourceCurrent_o = getAttrByName(characterID, "other_resource");
             resourceMax_o = getAttrByName(characterID, "other_resource", "max");
@@ -165,20 +157,14 @@ log('OTHER ------------------------------');
             do {
                 if (getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left_name')) {
                     resourceName_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left_name');
-log('LEFT '+i+' ------------------------------');
-                    log('Resource Name L pre-change = '+resourceName_l[i]);
-            resourceName_l[i]=checkRestList(resourceName_l[i])
-                    log('Resource Name L post-change = '+resourceName_l[i]);
+                    resourceName_l[i] = checkRestList(resourceName_l[i]);
                     resourceRecovery_l[i] = resourceName_l[i].split(/\+(.+)/)[1];
                     resourceCurrent_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left');
                     resourceMax_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left', 'max');
                 }
                 if (getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
                     resourceName_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name');
-log('RIGHT '+i+' ------------------------------');
-                    log('Resource Name R pre-change = '+resourceName_r[i]);
-            resourceName_r[i]=checkRestList(resourceName_r[i])
-                    log('Resource Name R post-change = '+resourceName_r[i]);
+                    resourceName_r[i] = checkRestList(resourceName_r[i]);
                     resourceRecovery_r[i] = resourceName_r[i].split(/\+(.+)/)[1];
                     resourceCurrent_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right');
                     resourceMax_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right', 'max');
@@ -191,72 +177,46 @@ log('RIGHT '+i+' ------------------------------');
 
 
 
-            //var myReport= JSON.stringify(allIDs);
-            //log ('Resource name: '+ resourceName_c + '   Recovery Rate: '+resourceRecovery_c+ '   Current: '+resourceCurrent_c+ '   Max: '+resourceMax_c);
-
-
-
-
             //recover resources function
             function recoverResource(rFullName, rName, rRecover, rCurrent, rMax) {
-                //           log ('rCurrent Type =  '+ typeof rCurrent);
                 let r = attrLookup(characterID, rCurrent);
-                log(rRecover);
-//                if (rRecover||msg.content.includes("ammo")) {
-//                    if (msg.content.includes("ammo")){rRecover="ammo"}
-                    
-                    if ((rRecover.includes("SR") && msg.content.includes("short")) || ((rRecover.includes("LR")||rRecover.includes("SR")) && msg.content.includes("long"))) {
 
+                if ((rRecover.includes("SR") && msg.content.includes("short")) || ((rRecover.includes("LR") || rRecover.includes("SR")) && msg.content.includes("long"))) {
 
-                        //    }
-                        log('function return rFullName =  ' + rFullName);
-                        log('function return rName =  ' + rName);
-                        log('function return rRecover =  ' + rRecover);
-                        log('function returns rCurrent =  ' + rCurrent);
-                        log('function return rMax =  ' + rMax);
+                    if (rRecover.includes('d')) {
 
-                        if (rRecover.includes('d')) {
-                            log("full recover string = " + rRecover);
-
-                            rRecover = rRecover.split(/SR|LR/)[1],
-                                log("dice expression = " + rRecover);
-                            let recoverAmount = parse(rRecover)
-                            r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
-                        } else {
-                            r.set('current', rMax);
-                        }
-                    } else if (rRecover.includes("d") && !rRecover.includes('R') && msg.content.includes("charges")) {
+                        rRecover = rRecover.split(/SR|LR/)[1];
                         let recoverAmount = parse(rRecover);
                         r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
-
-                    } else if (rRecover.includes('ammo') && msg.content.includes("ammo")) {
-                        let recoverAmount = (rMax- Number(r.get('current')))+'d2-'+(rMax- Number(r.get('current')));
-                        log ('recoverAmount = '+recoverAmount);
-                        recoverAmount = parse(recoverAmount);
-                        log ('recoverresult = '+recoverAmount);
-//                        parse(rRecover);
-                        r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
-                        r.set('max', r.get('current'));
+                        rReport = rReport + getAttrByName(characterID, rName) + ' added ' + recoverAmount + 'charges. <BR>';
+                    } else {
+                        r.set('current', rMax);
+                        rReport = rReport + getAttrByName(characterID, rName) + ' has been fully restored. <BR>';
 
                     }
+                } else if (rRecover.includes("d") && !rRecover.includes('R') && msg.content.includes("charges")) {
+                    let recoverAmount = parse(rRecover);
+                    r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
+                    rReport = rReport + getAttrByName(characterID, rName) + ' added ' + recoverAmount + 'charges. <BR>';
+                } else if (rRecover.includes('ammo') && msg.content.includes("ammo")) {
+                    let recoverAmount = (rMax - Number(r.get('current'))) + 'd2-' + (rMax - Number(r.get('current')));
+                    recoverAmount = parse(recoverAmount);
+                    r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
+                    r.set('max', r.get('current'));
+                    rReport = rReport + recoverAmount + ' ' + getAttrByName(characterID, rName) + ' have been recovered. <BR>';
+
                 }
-//            }
+            }
 
-
-            //    let bob = parse(rRecover)
-            //    log("bob =" + bob + '     rcurrent = '+ r.get('current'));
 
             //Run Recoveries Here
-
             recoverResource(resourceName_c, "class_resource_name", resourceRecovery_c, "class_resource", resourceMax_c);
             recoverResource(resourceName_o, "other_resource_name", resourceRecovery_o, "other_resource", resourceMax_o);
 
 
             i = 0;
             do {
-                if (resourceName_l[i])
-                //log ('Resource name: '+ resourceName_l[i] + '   Recovery Rate: '+resourceRecovery_l[i]+ '   Current: '+resourceCurrent_l[i]+ '   Max: '+resourceMax_l[i]);
-                {
+                if (resourceName_l[i]) {
                     recoverResource(resourceName_l[i], 'repeating_resource_$' + i + '_resource_left_name', resourceRecovery_l[i], 'repeating_resource_$' + i + '_resource_left', resourceMax_l[i]);
 
                 }
@@ -273,6 +233,12 @@ log('RIGHT '+i+' ------------------------------');
             }
             while (resourceName_r[i]);
 
+            if (msg.content.includes("help")) {
+                sendMessage('<h3>Rest and Recovery</h3><p>A Roll20 API script to handle recovery on the resource attributes on the D&amp;D 5th Edition by Roll20 sheet.To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. &quot;1d6&quot; is used in all examples, but you can do 2d6+3, 3d20, etc. Here are examples of the commands given and the codes that are affected.</p><b>!r-short</b><p><em>Used for Short Rest</em></p><p><strong>+SR</strong> This resource will return to its maximumm value</p><p><strong>+SR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b>!r-long</b><p><em>Used for Long Rest</em></p><p><strong>+LR</strong> This resource will return to its maximumm value</p><p><strong>+LR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b id="-r-charges">!r-Charges</b><p>*used for restoring charges that are user-controlled, such as &quot;at dawn&quot; or &quot;under a full moon&quot;.</p><p><strong>+1d6</strong></p><b>!r-Ammo</b><p>no code is used here. The script looks for common ammo types: Crossbow bolts, Arrows, Bullets, etc. It rolls 1d2 for each piece of ammo expended. If the result is a &quot;2&quot;, the ammo is recovered. The max and current values are adjusted to reflect the new total.</p><b>Special Cases</b><p>Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:</p><b>These are recovered on a Short or Long Rest:</b><ul><li>Invocations</li><li>Channel Divinity</li><li>Wild Shape</li><li>Superiority Dice</li><li><p>Ki Points</p><b>These are recovered on a Long Rest.</b></li><li>Rages</li><li>Lay on Hands</li><li>Sorcery Points</li></ul><p><strong>Bardic Inspiration</strong> needs a +SR or +LR code, since the recovery rate changes at fifth level</p>');
+            } else {
+                sendMessage(rReport);
+                log(rReport);
+            }
 
 
 

@@ -10,6 +10,34 @@ on('ready', () => {
             let idList = [];
             let nameList = []
             log('Sandbox is up');
+            
+            function checkRestList(rName){
+            let shortRestList = ['Invocations','Channel Divinity','Wild Shape','Superiority Dice','Ki Points'];
+            let longRestList = ['Rages','Lay on Hands','Sorcery Points'];
+            let ammoList = ['Crossbow bolts','Arrows','Bullets','Darts'];
+                  rRecoverName = rName;
+           
+            if (ammoList.includes(rName)){
+                 rRecoverName = rName+'+ammo';
+           }
+//            else if (shortRestList.includes(rName)&&msg.content.includes('short')){
+            else if (longRestList.includes(rName)){
+                rRecoverName = rName+'+LR';
+            }
+//            else if (longRestList.includes(rName)&&msg.content.includes('long')){
+            else if (shortRestList.includes(rName)){
+                rRecoverName = rName+'+SR';
+            } else{
+                rRecoverName = rName+'+x';
+            }
+             log('THE MESSAGE CONTENT IS'+msg.content);
+ log('THE RESOURCE NAME IS IS'+rName);
+ log('THE MESSAGERECOVERY CODE IS'+rRecoverName);
+
+            return rRecoverName;
+            }
+            
+            
             const attrLookup = (characterid, name, caseSensitive) => {
                 let match = name.match(/^(repeating_.*)_\$(\d+)_.*$/);
                 if (match) {
@@ -112,16 +140,22 @@ on('ready', () => {
 
 
             resourceName_c = getAttrByName(characterID, "class_resource_name");
+ log('CLASS ------------------------------');
+                   log('Resource Name c pre-change = '+resourceName_c);
+            resourceName_c=checkRestList(resourceName_c)
+                    log('Resource Name c post-change = '+resourceName_c);
             resourceRecovery_c = resourceName_c.split(/\+(.+)/)[1]; //Regex splits on first occurence of '+', so the dice strings are preserved
-            log('resourceRecovery_c = ' + resourceRecovery_c);
             resourceCurrent_c = getAttrByName(characterID, "class_resource");
             resourceMax_c = getAttrByName(characterID, "class_resource", "max");
             ///log(resourceMax_c);
 
 
             resourceName_o = getAttrByName(characterID, "other_resource_name");
+log('OTHER ------------------------------');
+                    log('Resource Name o pre-change = '+resourceName_o);
+            resourceName_o=checkRestList(resourceName_o)
+                    log('Resource Name o post-change = '+resourceName_o);
             resourceRecovery_o = resourceName_o.split(/\+(.+)/)[1];
-            log('resourceRecovery_o = ' + resourceRecovery_o);
             resourceCurrent_o = getAttrByName(characterID, "other_resource");
             resourceMax_o = getAttrByName(characterID, "other_resource", "max");
 
@@ -131,17 +165,21 @@ on('ready', () => {
             do {
                 if (getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left_name')) {
                     resourceName_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left_name');
-                    //if (resourceName_l[i]){
+log('LEFT '+i+' ------------------------------');
+                    log('Resource Name L pre-change = '+resourceName_l[i]);
+            resourceName_l[i]=checkRestList(resourceName_l[i])
+                    log('Resource Name L post-change = '+resourceName_l[i]);
                     resourceRecovery_l[i] = resourceName_l[i].split(/\+(.+)/)[1];
-                    //log('resourceRecovery_l['+i+'] = ' + resourceRecovery_l[i]);
                     resourceCurrent_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left');
                     resourceMax_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left', 'max');
                 }
                 if (getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
                     resourceName_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name');
-                    //if (resourceName_r[i]){
+log('RIGHT '+i+' ------------------------------');
+                    log('Resource Name R pre-change = '+resourceName_r[i]);
+            resourceName_r[i]=checkRestList(resourceName_r[i])
+                    log('Resource Name R post-change = '+resourceName_r[i]);
                     resourceRecovery_r[i] = resourceName_r[i].split(/\+(.+)/)[1];
-                    //log('resourceRecovery_r['+i+'] = ' + resourceRecovery_r[i]);
                     resourceCurrent_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right');
                     resourceMax_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right', 'max');
                 }
@@ -164,10 +202,10 @@ on('ready', () => {
                 //           log ('rCurrent Type =  '+ typeof rCurrent);
                 let r = attrLookup(characterID, rCurrent);
                 log(rRecover);
-                if (rRecover||msg.content.includes("ammo")) {
-                    if (msg.content.includes("ammo")){rRecover="ammo"}
+//                if (rRecover||msg.content.includes("ammo")) {
+//                    if (msg.content.includes("ammo")){rRecover="ammo"}
                     
-                    if ((rRecover.includes("SR") && msg.content.includes("short")) || (rRecover.includes("LR") && msg.content.includes("long"))) {
+                    if ((rRecover.includes("SR") && msg.content.includes("short")) || ((rRecover.includes("LR")||rRecover.includes("SR")) && msg.content.includes("long"))) {
 
 
                         //    }
@@ -191,7 +229,7 @@ on('ready', () => {
                         let recoverAmount = parse(rRecover);
                         r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
 
-                    } else if ((rFullName.includes('crossbow bolts') || rFullName.includes('arrows') || rFullName.includes('needles') || rFullName.includes('bullets') || rFullName.includes('darts')) && !rRecover.includes('R') && msg.content.includes("ammo")) {
+                    } else if (rRecover.includes('ammo') && msg.content.includes("ammo")) {
                         let recoverAmount = (rMax- Number(r.get('current')))+'d2-'+(rMax- Number(r.get('current')));
                         log ('recoverAmount = '+recoverAmount);
                         recoverAmount = parse(recoverAmount);
@@ -202,7 +240,7 @@ on('ready', () => {
 
                     }
                 }
-            }
+//            }
 
 
             //    let bob = parse(rRecover)

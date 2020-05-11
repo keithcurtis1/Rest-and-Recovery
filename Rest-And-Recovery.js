@@ -155,14 +155,20 @@ on('ready', () => {
             //Get Repeating Resources
             var i = 0
             do {
-                if (getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left_name')) {
+                if (attrLookup(characterID, 'repeating_resource_$' + i + '_resource_left_name')) {
                     resourceName_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left_name');
                     resourceName_l[i] = checkRestList(resourceName_l[i]);
                     resourceRecovery_l[i] = resourceName_l[i].split(/\+(.+)/)[1];
                     resourceCurrent_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left');
                     resourceMax_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left', 'max');
                 }
-                if (getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
+                i++;
+            }
+            while (i < 10);
+
+            var i = 0
+            do {
+                if (attrLookup(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
                     resourceName_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name');
                     resourceName_r[i] = checkRestList(resourceName_r[i]);
                     resourceRecovery_r[i] = resourceName_r[i].split(/\+(.+)/)[1];
@@ -171,7 +177,6 @@ on('ready', () => {
                 }
                 i++;
             }
-
             while (i < 10);
 
 

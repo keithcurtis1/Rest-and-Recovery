@@ -2,7 +2,7 @@
 A Roll20 API script to handle recovery on the resource attributes on the D&D 5th Edition by Roll20 sheet.
 To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. Here are examples of the command given and the codes that are affected.
 
-**!r-short**
+## !r-short
 
 *Used for Short Rest*
 
@@ -11,7 +11,7 @@ To use this script, resources must include a code in their name, separated from 
 **+SR1d6** This resource will add 1d6 to the resource up to its maximum value
 
 
-**!r-short**
+## !r-long
 
 *Used for Long Rest*
 
@@ -20,33 +20,41 @@ To use this script, resources must include a code in their name, separated from 
 **+LR1d6** This resource will add 1d6 to the resource up to its maximum value
 
 
-**!r-Charges**
+## !r-Charges
 
 *used for restoring charges that are user-controlled, such as "at dawn" or "under a full moon"
 
 **+1d6**
 
 
-**!r-Ammo**
+## !r-Ammo
 
 *no code is used here. The script looks for common ammo types: Crossbow bolts, Arrows, Bullets, etc. It rolls 1d2 for each piece of ammo expended. If the result is a "2", the ammo is recovered. The max and current values are adjusted to reflect the new total.
 
 
+## Special Cases
+
 Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:
 
-These are recovered on a Short or Long Rest:
+### These are recovered on a Short or Long Rest:
 
--**Invocations**
--**Channel Divinity**
--**Wild Shape**
--**Superiority Dice**
--**Ki Points**
+- **Invocations**
 
- These are recovered on a Long Rest.
+- **Channel Divinity**
+
+- **Wild Shape**
+
+- **Superiority Dice**
+
+- **Ki Points**
+
+ ### These are recovered on a Long Rest.
  
--**Rages**
--**Lay on Hands**
--**Sorcery Points**
+- **Rages**
+
+- **Lay on Hands**
+
+- **Sorcery Points**
 
 
 

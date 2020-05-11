@@ -38,23 +38,21 @@ Finally, the following special cases exist. Class Resources that have any of the
 
 ### These are recovered on a Short or Long Rest:
 
-- **Invocations**
+- Invocations
 
-- **Channel Divinity**
+- Channel Divinity
 
-- **Wild Shape**
+- Wild Shape
 
-- **Superiority Dice**
+- Superiority Dice
 
-- **Ki Points**
+- Ki Points
 
  ### These are recovered on a Long Rest.
  
-- **Rages**
-
-- **Lay on Hands**
-
-- **Sorcery Points**
+- Rages
+- Lay on Hands
+- Sorcery Points
 
 
 

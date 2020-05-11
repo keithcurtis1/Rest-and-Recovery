@@ -45,4 +45,4 @@ Finally, the following special cases exist. Class Resources that have any of the
 
 
 
-**Bardic Inspiration** needs a -SR or -LR code, since the recovery rate changes at fifth level
+**Bardic Inspiration** needs a +SR or +LR code, since the recovery rate changes at fifth level

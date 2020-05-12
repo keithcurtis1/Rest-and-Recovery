@@ -1,4 +1,4 @@
-# Rest-and-Recovery
+# Rest and Recovery
 A Roll20 API script to handle recovery on the resource attributes on the D&D 5th Edition by Roll20 sheet.
 To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. "1d6" is used in all examples, but you can do 2d6+3, 3d20, etc. Here are examples of the commands given and the codes that are affected.
 

@@ -32,11 +32,11 @@ no code is used here. The script looks for common ammo types: Crossbow bolts, Ar
 Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:
 
 ### These are recovered on a Short or Long Rest:
-- Invocations
+- Spell Slots, Warlock Spell Slots
 - Channel Divinity
 - Wild Shape
 - Superiority Dice
-- Ki Points
+- Ki Points, Ki
 
  ### These are recovered on a Long Rest.
 - Rages

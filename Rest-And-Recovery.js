@@ -11,16 +11,18 @@ on('ready', () => {
             let idList = [];
             let nameList = [];
             var rReport = '';
-const header = "<div style='width: 100%; color: #000; border: 1px solid #000; background-color: #fff; box-shadow: 0 0 3px #000; width: 90%; display: block; text-align: left; font-size: 13px; padding: 5px; margin-bottom: 0.25em; font-family: sans-serif; white-space: pre-wrap;'>";
-const footer = '</div>';
-function sendMessage (messageText){
+            const header = "<div style='width: 100%; color: #000; border: 1px solid #000; background-color: #fff; box-shadow: 0 0 3px #000; width: 90%; display: block; text-align: left; font-size: 13px; padding: 5px; margin-bottom: 0.25em; font-family: sans-serif; white-space: pre-wrap;'>";
+            const footer = '</div>';
+
+            function sendMessage(messageText) {
                 sendChat("Rest and Recovery", "/w " + msg.who + header + messageText + footer);
 
-}
+            }
+
             function checkRestList(rName) {
-                let shortRestList = ['Spell Slots','Warlock Spell Slots','Channel Divinity', 'Wild Shapes', 'Superiority Dice', 'Ki', 'Ki Points'];
+                let shortRestList = ['Spell Slots', 'Warlock Spell Slots', 'Channel Divinity', 'Wild Shapes', 'Superiority Dice', 'Ki', 'Ki Points'];
                 let longRestList = ['Rages', 'Lay on Hands', 'Sorcery Points'];
-                let ammoList = ['Crossbow bolts', 'Arrows', 'Bullets', 'Darts'];
+                let ammoList = ['Crossbow bolts', 'Arrows', 'Bullets', 'Sling Bullets', 'Needles', 'Darts'];
                 rRecoverName = rName;
 
                 if (ammoList.includes(rName)) {
@@ -160,8 +162,8 @@ function sendMessage (messageText){
                     resourceCurrent_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left');
                     resourceMax_l[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_left', 'max');
                 }
- 
-               if (attrLookup(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
+
+                if (attrLookup(characterID, 'repeating_resource_$' + i + '_resource_right_name')) {
                     resourceName_r[i] = getAttrByName(characterID, 'repeating_resource_$' + i + '_resource_right_name');
                     resourceName_r[i] = checkRestList(resourceName_r[i]);
                     resourceRecovery_r[i] = resourceName_r[i].split(/\+(.+)/)[1];
@@ -170,7 +172,7 @@ function sendMessage (messageText){
                 }
                 i++;
             }
-            while (i<10);
+            while (i < 10);
 
 
 
@@ -197,13 +199,14 @@ function sendMessage (messageText){
                     r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
                     rReport = rReport + getAttrByName(characterID, rName) + ' added ' + recoverAmount + 'charges. <BR>';
                 } else if (rRecover.includes('ammo') && msg.content.includes("ammo")) {
-                    let recoverAmount = (rMax - Number(r.get('current'))) + 'd2-' + (rMax - Number(r.get('current')));
-                    recoverAmount = parse(recoverAmount);
-                    r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
-                    r.set('max', r.get('current'));
-                    rReport = rReport + recoverAmount + ' ' + getAttrByName(characterID, rName) + ' have been recovered. <BR>';
-
-                }  
+                    if (rMax - Number(r.get('current')) > 0) {
+                        let recoverAmount = (rMax - Number(r.get('current'))) + 'd2-' + (rMax - Number(r.get('current')));
+                        recoverAmount = parse(recoverAmount);
+                        r.set('current', Math.min(Number(r.get('current')) + recoverAmount, rMax));
+                        r.set('max', r.get('current'));
+                        rReport = rReport + recoverAmount + ' ' + getAttrByName(characterID, rName) + ' have been recovered. <BR>';
+                    }
+                }
             }
 
 
@@ -230,13 +233,18 @@ function sendMessage (messageText){
                 i++;
             }
             while (resourceName_r[i]);
-            
-            if (msg.content.includes("help")){
-                    sendMessage ('<h3>Rest and Recovery</h3><p>A Roll20 API script to handle recovery on the resource attributes on the D&amp;D 5th Edition by Roll20 sheet.To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. &quot;1d6&quot; is used in all examples, but you can do 2d6+3, 3d20, etc. Here are examples of the commands given and the codes that are affected.</p><b>!r-short</b><p><em>Used for Short Rest</em></p><p><strong>+SR</strong> This resource will return to its maximumm value</p><p><strong>+SR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b>!r-long</b><p><em>Used for Long Rest</em></p><p><strong>+LR</strong> This resource will return to its maximumm value</p><p><strong>+LR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b id="-r-charges">!r-Charges</b><p>*used for restoring charges that are user-controlled, such as &quot;at dawn&quot; or &quot;under a full moon&quot;.</p><p><strong>+1d6</strong></p><b>!r-Ammo</b><p>no code is used here. The script looks for common ammo types: Crossbow bolts, Arrows, Bullets, etc. It rolls 1d2 for each piece of ammo expended. If the result is a &quot;2&quot;, the ammo is recovered. The max and current values are adjusted to reflect the new total.</p><b>Special Cases</b><p>Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:</p><b>These are recovered on a Short or Long Rest:</b><ul><li>Invocations</li><li>Channel Divinity</li><li>Wild Shape</li><li>Superiority Dice</li><li><p>Ki Points</p><b>These are recovered on a Long Rest.</b></li><li>Rages</li><li>Lay on Hands</li><li>Sorcery Points</li></ul><p><strong>Bardic Inspiration</strong> needs a +SR or +LR code, since the recovery rate changes at fifth level</p>');
- }else{
-     sendMessage (rReport);
-                 log(rReport);
+
+            if (msg.content.includes("help")) {
+                sendMessage('<h3>Rest and Recovery</h3><p>A Roll20 API script to handle recovery on the resource attributes on the D&amp;D 5th Edition by Roll20 sheet.To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. &quot;1d6&quot; is used in all examples, but you can do 2d6+3, 3d20, etc. Here are examples of the commands given and the codes that are affected.</p><b>!r-short</b><p><em>Used for Short Rest</em></p><p><strong>+SR</strong> This resource will return to its maximumm value</p><p><strong>+SR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b>!r-long</b><p><em>Used for Long Rest</em></p><p><strong>+LR</strong> This resource will return to its maximumm value</p><p><strong>+LR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b id="-r-charges">!r-Charges</b><p>*used for restoring charges that are user-controlled, such as &quot;at dawn&quot; or &quot;under a full moon&quot;.</p><p><strong>+1d6</strong></p><b>!r-Ammo</b><p>no code is used here. The script looks for common ammo types: Crossbow bolts, Arrows, Bullets, etc. It rolls 1d2 for each piece of ammo expended. If the result is a &quot;2&quot;, the ammo is recovered. The max and current values are adjusted to reflect the new total.</p><b>Special Cases</b><p>Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:</p><b>These are recovered on a Short or Long Rest:</b><ul><li>Spell Slots, Warlock Spell Slots</li><li>Channel Divinity</li><li>Wild Shape</li><li>Superiority Dice</li><li><p>Ki Points, Ki</p><b>These are recovered on a Long Rest.</b></li><li>Rages</li><li>Lay on Hands</li><li>Sorcery Points</li></ul><p><strong>Bardic Inspiration</strong> needs a +SR or +LR code, since the recovery rate changes at fifth level</p>');
+            } else {
+                if (rReport) {
+                    sendMessage(rReport);
+                } else {
+                    sendMessage('No resources were changed.');
+
                 }
+                log(rReport);
+            }
 
 
 

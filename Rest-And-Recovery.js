@@ -1,13 +1,15 @@
 // Rest and Recovery
 // A Roll20 API script to handle recovery on the resource attributes on the D&D 5th Edition by Roll20 sheet.
 on('ready', () => {
-    const version = '0.0.1';
+    const version = '0.0.2';
     const sheetVersion = 'D&D 5th Edition by Roll20';
     log('Rest and Recovery v' + version + ' is ready!  Designed for use with the ' + sheetVersion + ' character sheet!');
-
+                const shortRestList = ['Spell Slots', 'Warlock Spell Slots','Spell Points','Channel Divinity', 'Wild Shapes', 'Second Wind','Action Surge','Superiority Dice', 'Ki', 'Ki Points','Visions of the Past','Enthralling Performance','Words of Terror','Unbreakable Majesty','Spirit Totem','Indomitable','Arcane Shot','Detect Portal','Ethereal Step','Magic-Users Nemesis','Favored by the Gods','Wind Soul','Blade Song','Arcane Abeyance','Illusory Step','Shapechanger'];
+                const longRestList = ['Rages', 'Lay on Hands', 'Sorcery Points','Flash of Genius','Divine Intervention','Eyes of the Grave','Warding Flare','Wrath of the Storm','Cleansing Touch','War Priest Attack','Sentinel at Deaths Door','Embodiment of the Law','Universal Speech','Mantle of Majesty','Infectious Inspiration','Shadow Lore','Balm of the Summer Court','Natural Recovery','Fungal Infestation','Hidden Paths','Walker in Dreams','Faithful Summons','Fighting Spirit','Warding Maneuver','Strength Before Death','Unwavering Mark','Wholeness of Body','Glorious Defense','Undying Sentinel','Invincible Conqueror','Holy Nimbus','Living Legend','Emissary of Redemption','Elder Champion','Avenging Angel','Dread Lord','Hunters Sense','Unerring Eye','Spell Thief','Strength of the Grave','Tides of Chaos','Unearthly Recovery','Mystic Arcanum-6th','Mystic Arcanum-7th','Mystic Arcanum-8th','Mystic Arcanum-9th','Eldritch Master','Chronal Shift','Momentary Stasis','Benign Transposition','Instinctive Charm','Power Surge','Violent Attraction','Event Horizon'];
+                const ammoList = ['Crossbow bolts', 'Arrows', 'Bullets', 'Sling Bullets', 'Needles', 'Darts'];
 
     on('chat:message', (msg) => {
-        if ('api' === msg.type && /!r-(short|long|charges|ammo|help)\b/i.test(msg.content) && msg.selected) {
+        if ('api' === msg.type && /!r-(short|long|charges|ammo|help|list)\b/i.test(msg.content) && msg.selected) {
             let idList = [];
             let nameList = [];
             var rReport = '';
@@ -20,9 +22,7 @@ on('ready', () => {
             }
 
             function checkRestList(rName) {
-                let shortRestList = ['Spell Slots', 'Warlock Spell Slots', 'Channel Divinity', 'Wild Shapes', 'Superiority Dice', 'Ki', 'Ki Points'];
-                let longRestList = ['Rages', 'Lay on Hands', 'Sorcery Points'];
-                let ammoList = ['Crossbow bolts', 'Arrows', 'Bullets', 'Sling Bullets', 'Needles', 'Darts'];
+
                 rRecoverName = rName;
 
                 if (ammoList.includes(rName)) {
@@ -237,11 +237,14 @@ on('ready', () => {
             if (msg.content.includes("help")) {
                 sendMessage('<h3>Rest and Recovery</h3><p>A Roll20 API script to handle recovery on the resource attributes on the D&amp;D 5th Edition by Roll20 sheet.To use this script, resources must include a code in their name, separated from the name by a plus sign. You can include standard dice expressions as well. &quot;1d6&quot; is used in all examples, but you can do 2d6+3, 3d20, etc. Here are examples of the commands given and the codes that are affected.</p><b>!r-short</b><p><em>Used for Short Rest</em></p><p><strong>+SR</strong> This resource will return to its maximumm value</p><p><strong>+SR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b>!r-long</b><p><em>Used for Long Rest</em></p><p><strong>+LR</strong> This resource will return to its maximumm value</p><p><strong>+LR1d6</strong> This resource will add 1d6 to the resource up to its maximum value</p><b id="-r-charges">!r-Charges</b><p>*used for restoring charges that are user-controlled, such as &quot;at dawn&quot; or &quot;under a full moon&quot;.</p><p><strong>+1d6</strong></p><b>!r-Ammo</b><p>no code is used here. The script looks for common ammo types: Crossbow bolts, Arrows, Bullets, etc. It rolls 1d2 for each piece of ammo expended. If the result is a &quot;2&quot;, the ammo is recovered. The max and current values are adjusted to reflect the new total.</p><b>Special Cases</b><p>Finally, the following special cases exist. Class Resources that have any of the following names are recognized and handled appropriately:</p><b>These are recovered on a Short or Long Rest:</b><ul><li>Spell Slots, Warlock Spell Slots</li><li>Channel Divinity</li><li>Wild Shape</li><li>Superiority Dice</li><li><p>Ki Points, Ki</p><b>These are recovered on a Long Rest.</b></li><li>Rages</li><li>Lay on Hands</li><li>Sorcery Points</li></ul><p><strong>Bardic Inspiration</strong> needs a +SR or +LR code, since the recovery rate changes at fifth level</p>');
             } else {
+             if (msg.content.includes("list")) {
+                sendMessage('<h3>Rest and Recovery</h3></br><strong>Short Rest Class Resources</strong><br>'+shortRestList.join('</br><br>')+'</br><p></p><strong>Long Rest Class Resources</strong><br>'+longRestList.join('</br><br>')+'</br><p></p><strong>Ammo Types</strong><br>'+ammoList.join('</br><br>')+'</br>');
+            } else {
                 if (rReport) {
                     sendMessage(rReport);
                 } else {
                     sendMessage('No resources were changed.');
-
+}
                 }
                 log(rReport);
             }

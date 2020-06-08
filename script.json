@@ -7,10 +7,8 @@
   "roll20userid": "162065",
   "dependencies": [],
   "modifies": {
-    "repeating_resource_*_resource_left": "read,write",
-    "repeating_resource_*_resource_right": "read,write",
-    "other_resource": "read,write",
-    "class_resource": "read,write",
+        "attribute.current": "read,write",
+        "attribute.max": "read,write"
   },
   "conflicts": [],
   "previousversions":[""]
